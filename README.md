@@ -36,6 +36,8 @@ It needs to develop a program to visualise 3D wireframe models:
 ### Stack
 - C
 - C++
-- QT, QT Creator, qmake
+- OpenGL
+- QT, QT Creator
+- Makefile
 - Doxygen
 - lcheck, gcov, gcovr
