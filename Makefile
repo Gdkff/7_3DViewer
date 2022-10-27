@@ -1,15 +1,7 @@
-CC	=	gcc 
-CFLAGS = -Wall -Wextra -Werror -std=c11 -g
-SOURCES = *.c
-OBJECTS = *.o
-TESTEXEC = test_run
-
-BUILD_DIR = build
-
-# ALL_PROJECT = *.c *.h qt_project/*.cpp qt_project/*.h tests/*.c tests/*.h
-
+.PHONY: all install run_app uninstall clean dvi dist tests gcov_report check
 
 LIBS_ADDITIONAL = 
+RUN_APP_PATH = /3DViewer_v1_0.app/Contents/MacOS/3DViewer_v1_0
 ifeq ($(OS), Windows_NT)
     detected_OS := Windows
 else
@@ -24,7 +16,7 @@ ifeq ($(detected_OS), Linux)
 
 	ifeq ($(detected_Linux), Ubuntu)
 	LIBS_ADDITIONAL = -lm -lsubunit
-	BUILD_DIR = build/
+	RUN_APP_PATH = 3DViewer_v1_0
 	endif
 	
 	ifeq ($(detected_Linux), Debian)
@@ -33,7 +25,12 @@ ifeq ($(detected_OS), Linux)
 	
 endif
 
-
+CC	=	gcc 
+CFLAGS = -Wall -Wextra -Werror -std=c11 -g
+SOURCES = *.c
+OBJECTS = *.o
+TESTEXEC = test_run
+BUILD_DIR = build/
 
 
 all: install run_app
@@ -44,11 +41,10 @@ install:
 	make -C ./$(BUILD_DIR)
 
 run_app:
-	./$(BUILD_DIR)/3DViewer_v1_0.app/Contents/MacOS/3DViewer_v1_0
+	./$(BUILD_DIR)$(RUN_APP_PATH)
 
 uninstall:
 	rm -Rf build/
-#		rm -rf Calc.tar
 
 clean:
 	rm -Rf html/
@@ -70,11 +66,10 @@ dist: uninstall clean
 	tar -cf ./3DViewer_v1_0.tar * 
 
 tests: 
-#find . -name '*.gcda' -type f -delete
 	$(CC) $(CFLAGS) -c tests/test_main.c
 	$(CC) $(CFLAGS) test_main.o --coverage $(SOURCES) -o $(TESTEXEC) -lcheck $(LIBS_ADDITIONAL)
 	./$(TESTEXEC)
-#gcov tests/tests-c_calc_polish.gcda
+
 
 gcov_report: test
 	gcovr -b
@@ -86,11 +81,3 @@ gcov_report: test
 
 check:
 	cppcheck --enable=all --force --check-config for details *.c *.h
-#cp ../../materials/linters/.clang-format .clang-format
-	clang-format -n *.c
-
-# check: test
-# 	cppcheck --enable=all --force --check-config for details *.c *.h
-# 	cp ../materials/linters/.clang-format .clang-format
-# 	cp ../materials/linters/.clang-format qt_project/.clang-format
-# 	clang-format -n $(ALL_PROJECT)
